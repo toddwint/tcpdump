@@ -6,7 +6,7 @@
 
 <https://github.com/toddwint/tcpdump>
 
-`tcpdump` docker image for simple lab network testing.
+TCPDUMP docker image for simple lab network testing.
 
 This image was created for lab setups where there is a need to verify network traffic.
 
@@ -40,11 +40,13 @@ cp template/webadmin.html.template webadmin.html
 sed -i "s/IPADDR/$IPADDR:$HTTPPORT/g" webadmin.html
 docker run -dit --rm \
     --name tcpdump \
+    -h $HOSTNAME \
     -p $IPADDR:$PORT:$PORT/$IPPROTO \
     -p $IPADDR:$HTTPPORT:$HTTPPORT \
     -v tcpdump:/var/log/tcpdump \
     -e TZ=$TZ \
     -e HTTPPORT=$HTTPPORT \
+    -e HOSTNAME=$HOSTNAME \
     -e IPPROTO=$IPPROTO \
     -e PORT=$PORT \
     --cap-add=NET_ADMIN \
@@ -60,7 +62,8 @@ See my github page (referenced above).
 
 Open the `webadmin.html` file.
 
-Or just type in your browser `http://localhost:port` or the IP you set in the config.  
+Or just type in your browser `http://<ip_address>:<port>`
+
 
 ## Issues?
 
