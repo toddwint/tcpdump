@@ -155,53 +155,108 @@
 <body>
 <h1 id="toddwinttcpdump">toddwint/tcpdump</h1>
 <h2 id="info">Info</h2>
-<p><a href="https://hub.docker.com/r/toddwint/tcpdump" class="uri">https://hub.docker.com/r/toddwint/tcpdump</a></p>
-<p><a href="https://github.com/toddwint/tcpdump" class="uri">https://github.com/toddwint/tcpdump</a></p>
-<p>TCPDUMP docker image for simple lab network testing.</p>
-<p>This image was created for lab setups where there is a need to verify network traffic.</p>
+<p><code>tcpdump</code> docker image for simple lab testing applications.</p>
+<p>Docker Hub: <a href="https://hub.docker.com/r/toddwint/tcpdump" class="uri">https://hub.docker.com/r/toddwint/tcpdump</a></p>
+<p>GitHub: <a href="https://github.com/toddwint/tcpdump" class="uri">https://github.com/toddwint/tcpdump</a></p>
 <h2 id="features">Features</h2>
 <ul>
-<li>Receive packets over the network.</li>
-<li>View network packets in a web browser (<a href="https://github.com/mthenw/frontail">frontail</a>)
+<li>Ubuntu base image</li>
+<li>Plus:
 <ul>
-<li>tail the file</li>
-<li>pause the flow</li>
-<li>search through the flow</li>
-<li>highlight multiple rows</li>
+<li>tcpdump</li>
+<li>tmux</li>
+<li>python3-minimal</li>
+<li>iproute2</li>
+<li>tzdata</li>
+<li><a href="https://github.com/tsl0922/ttyd">ttyd</a>
+<ul>
+<li>View the terminal in your browser</li>
 </ul></li>
-<li>Network packets are persistent if you map the directory <code>/var/log/tcpdump</code></li>
+<li><a href="https://github.com/mthenw/frontail">frontail</a>
+<ul>
+<li>View logs in your browser</li>
+<li>Mark/Highlight logs</li>
+<li>Pause logs</li>
+<li>Filter logs</li>
+</ul></li>
+<li><a href="https://github.com/gvalkov/tailon">tailon</a>
+<ul>
+<li>View multiple logs and files in your browser</li>
+<li>User selectable <code>tail</code>, <code>grep</code>, <code>sed</code>, and <code>awk</code> commands</li>
+<li>Filter logs and files</li>
+<li>Download logs to your computer</li>
+</ul></li>
+</ul></li>
 </ul>
 <h2 id="sample-config.txt-file">Sample <code>config.txt</code> file</h2>
 <pre><code>TZ=UTC
-IPADDR=127.0.0.1
-HTTPPORT=9001
-HOSTNAME=tcpdumpsrvr
-IPPROTO=udp
-PORT=8601</code></pre>
-<h2 id="sample-docker-run-command">Sample docker run command</h2>
+INTERFACE=eth0
+IPADDR=192.168.1.1
+MGMTIP=192.168.1.2
+SUBNET=192.168.1.0/24
+GATEWAY=192.168.1.254
+ROTATE_SECONDS=300
+EXPRESSION=
+EXPRESSION_TYPE=
+HTTPPORT1=8080
+HTTPPORT2=8081
+HTTPPORT3=8082
+HTTPPORT4=8083
+HOSTNAME=tcpdumpsrvr01</code></pre>
+<h2 id="sample-docker-run-script">Sample docker run script</h2>
 <pre><code>#!/usr/bin/env bash
-source config.txt
-cp template/webadmin.html.template webadmin.html
-sed -i &quot;s/IPADDR/$IPADDR:$HTTPPORT/g&quot; webadmin.html
-docker run -dit --rm \
-    --name tcpdump \
-    -h $HOSTNAME \
-    -p $IPADDR:$PORT:$PORT/$IPPROTO \
-    -p $IPADDR:$HTTPPORT:$HTTPPORT \
-    -v tcpdump:/var/log/tcpdump \
-    -e TZ=$TZ \
-    -e HTTPPORT=$HTTPPORT \
-    -e HOSTNAME=$HOSTNAME \
-    -e IPPROTO=$IPPROTO \
-    -e PORT=$PORT \
-    --cap-add=NET_ADMIN \
-    toddwint/tcpdump</code></pre>
-<h2 id="sample-webadmin.html.template-file">Sample webadmin.html.template file</h2>
-<p>See my github page (referenced above).</p>
+REPO=toddwint
+APPNAME=tcpdump
+HUID=$(id -u)
+HGID=$(id -g)
+source &quot;$(dirname &quot;$(realpath $0)&quot;)&quot;/config.txt
+
+# Make the macvlan needed to listen on ports
+docker network create -d macvlan --subnet=&quot;$SUBNET&quot; --gateway=&quot;$GATEWAY&quot; \
+  --aux-address=&quot;mgmt_ip=$MGMTIP&quot; -o parent=&quot;$INTERFACE&quot; \
+  &quot;$HOSTNAME&quot;
+sudo ip link add &quot;$HOSTNAME&quot; link &quot;$INTERFACE&quot; type macvlan mode bridge
+sudo ip addr add &quot;$MGMTIP&quot;/32 dev &quot;$HOSTNAME&quot;
+sudo ip link set &quot;$HOSTNAME&quot; up
+sudo ip route add &quot;$IPADDR&quot;/32 dev &quot;$HOSTNAME&quot;
+
+# Create the docker container
+docker run -dit \
+    --name &quot;$HOSTNAME&quot; \
+    --net=&quot;$HOSTNAME&quot; \
+    --ip $IPADDR \
+    -h &quot;$HOSTNAME&quot; \
+    -v &quot;$(pwd)&quot;/captures:/opt/&quot;$APPNAME&quot;/scripts/captures \
+    -p &quot;$IPADDR&quot;:&quot;$HTTPPORT1&quot;:&quot;$HTTPPORT1&quot; \
+    -p &quot;$IPADDR&quot;:&quot;$HTTPPORT2&quot;:&quot;$HTTPPORT2&quot; \
+    -p &quot;$IPADDR&quot;:&quot;$HTTPPORT3&quot;:&quot;$HTTPPORT3&quot; \
+    -p &quot;$IPADDR&quot;:&quot;$HTTPPORT4&quot;:&quot;$HTTPPORT4&quot; \
+    -e TZ=&quot;$TZ&quot; \
+    -e ROTATE_SECONDS=&quot;$ROTATE_SECONDS&quot; \
+    -e EXPRESSION=&quot;$EXPRESSION&quot; \
+    -e EXPRESSION_TYPE=&quot;$EXPRESSION_TYPE&quot; \
+    -e HUID=&quot;$HUID&quot; \
+    -e HGID=&quot;$HGID&quot; \
+    -e HTTPPORT1=&quot;$HTTPPORT1&quot; \
+    -e HTTPPORT2=&quot;$HTTPPORT2&quot; \
+    -e HTTPPORT3=&quot;$HTTPPORT3&quot; \
+    -e HTTPPORT4=&quot;$HTTPPORT4&quot; \
+    -e HOSTNAME=&quot;$HOSTNAME&quot; \
+    -e APPNAME=&quot;$APPNAME&quot; \
+    `# --cap-add=NET_ADMIN \ ` \
+    ${REPO}/${APPNAME}</code></pre>
 <h2 id="login-page">Login page</h2>
 <p>Open the <code>webadmin.html</code> file.</p>
-<p>Or just type in your browser <code>http://&lt;ip_address&gt;:&lt;port&gt;</code></p>
+<ul>
+<li>Or just type in your browser:
+<ul>
+<li><code>http://&lt;ip_address&gt;:&lt;port1&gt;</code> or</li>
+<li><code>http://&lt;ip_address&gt;:&lt;port2&gt;</code> or</li>
+<li><code>http://&lt;ip_address&gt;:&lt;port3&gt;</code></li>
+<li><code>http://&lt;ip_address&gt;:&lt;port4&gt;</code></li>
+</ul></li>
+</ul>
 <h2 id="issues">Issues?</h2>
-<p>Make sure if you set an IP that machine has the same IP configured on an interface.</p>
+<p>Make sure to set the IP on the host and that the ports being used are not currently being used by the host.</p>
 </body>
 </html>

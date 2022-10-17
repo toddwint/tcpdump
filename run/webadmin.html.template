@@ -153,14 +153,14 @@
   <![endif]-->
 </head>
 <body>
-<!--
-<nav id="TOC" role="doc-toc">
-<ul>
-<li><a href="#launch-page-for-webadmin">Launch page for webadmin</a></li>
-</ul>
-</nav>
--->
 <h1 id="launch-page-for-webadmin">Launch page for webadmin</h1>
-<p><a href="http://IPADDR" class="uri">http://IPADDR</a></p>
+<h2 id="ttyd-webadmin-page">ttyd webadmin page</h2>
+<p><a href="http://IPADDR:HTTPPORT1" class="uri">http://IPADDR:HTTPPORT1</a></p>
+<h2 id="ttyd-wtmux-webadmin-page">ttyd (w/tmux) webadmin page</h2>
+<p><a href="http://IPADDR:HTTPPORT2" class="uri">http://IPADDR:HTTPPORT2</a></p>
+<h2 id="frontail-webadmin-page">Frontail webadmin page</h2>
+<p><a href="http://IPADDR:HTTPPORT3" class="uri">http://IPADDR:HTTPPORT3</a></p>
+<h2 id="tailon-webadmin-page">Tailon webadmin page</h2>
+<p><a href="http://IPADDR:HTTPPORT4" class="uri">http://IPADDR:HTTPPORT4</a></p>
 </body>
 </html>

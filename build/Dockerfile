@@ -1,31 +1,36 @@
-FROM ubuntu:focal
+FROM toddwint/mybaseimage
 COPY scripts /opt/tcpdump/scripts
-EXPOSE 9001 8601/udp
 ENV DEBIAN_FRONTEND=noninteractive \
     TZ=UTC \
-    HTTPPORT=9001 \
+    ROTATE_SECONDS=300 \
+    EXPRESSION= \
+    EXPRESSION_TYPE= \
+    HUID=1001 \
+    HGID=1001 \
+    HTTPPORT1=8080 \
+    HTTPPORT2=8081 \
+    HTTPPORT3=8082 \
+    HTTPPORT4=8083 \
     HOSTNAME=tcpdumpsrvr \
-    IPPROTO=udp \
-    PORT=8601
-RUN apt-get update \
+    APPNAME=tcpdump
+# tcpdump version > 4.99 is required. Focal only has version 4.9.3
+RUN echo 'deb http://archive.ubuntu.com/ubuntu/ jammy main' >> /etc/apt/sources.list \
+    && \
+    echo 'deb-src http://archive.ubuntu.com/ubuntu/ jammy main' >> /etc/apt/sources.list \ 
+    && \
+    apt-get update \
     && \
     apt-get install -y \
-    tzdata \
-    iproute2 \
-    wget \
     tcpdump \
     && \
     echo $HOSTNAME > /etc/hostname \
     && \
-    wget -q https://github.com/mthenw/frontail/releases/download/v4.9.1/frontail-linux -O /usr/local/bin/frontail \
+    cd /opt \
     && \
-    chmod 755 /usr/local/bin/frontail \
-    && \
-    apt-get remove -y \
-    wget \
+    rm -rf /opt/mybaseimage \
     && \
     apt-get autoremove -y \
     && \
     rm -rf /var/lib/apt/lists/*
-WORKDIR /opt/tcpdump
+WORKDIR /opt/tcpdump/scripts
 CMD ["/opt/tcpdump/scripts/startup.sh"]
