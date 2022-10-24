@@ -6,4 +6,4 @@ echo '
   docker run command.
 '
 sleep 1s
-tail -n 500 -f /opt/"$APPNAME"/logs/"$APPNAME".log
+tail -n 500 -F /opt/"$APPNAME"/logs/"$APPNAME".log

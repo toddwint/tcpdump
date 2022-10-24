@@ -189,20 +189,75 @@
 </ul></li>
 </ul>
 <h2 id="sample-config.txt-file">Sample <code>config.txt</code> file</h2>
-<pre><code>TZ=UTC
+<pre><code># To get a list of timezones view the files in `/usr/share/zoneinfo`
+TZ=UTC
+
+# The interface on which to set the IP. Run `ip -br a` to see a list
 INTERFACE=eth0
-IPADDR=192.168.1.1
-MGMTIP=192.168.1.2
-SUBNET=192.168.1.0/24
-GATEWAY=192.168.1.254
+
+# The IP address that will be set on the docker container
+IPADDR=192.168.10.1
+
+# The IP address that will be set on the host to manage the docker container
+MGMTIP=192.168.10.2
+
+# The IP subnet in the form subnet/cidr
+SUBNET=192.168.10.0/24
+
+# The IP of the gateway. 
+# Don&#39;t leave blank. Enter a valid ip from the subnet range
+GATEWAY=192.168.10.254
+
+# The amount of time in seconds tcpdump will create a new file
 ROTATE_SECONDS=300
-EXPRESSION=
+
+# Filters for specific traffic
+# Examples:
+# &#39;tcp and port 443&#39;
+# &#39;host 192.168.12.4&#39;
+# &#39;net 192.168.12.0/24&#39;
+# &#39;icmp&#39;
+# &#39;tcp src port 53&#39;
+# &#39;udp dst port 69&#39;
+# &#39;port not 443 and port not 80&#39;
+EXPRESSION=&#39;&#39;
+
+# Only enter one entry from the list below on the docker container
+# Here is what tcpdump&#39;s manual has to say about this feature:
+#
+# Force packets selected by &quot;expression&quot; to be interpreted the specified type.
+# Currently  known  types  are  
+#   - aodv (Ad-hoc On-demand Distance Vector protocol),
+#   - carp (Common Address Redundancy Protocol)
+#   - cnfp (Cisco NetFlow  protocol),
+#   - domain  (Domain Name System)
+#   - lmp (Link Management Protocol)
+#   - pgm (Pragmatic General Multicast)
+#   - pgm_zmtp1 (ZMTP/1.0 inside PGM/EPGM)
+#   - ptp (Precision Time Protocol)
+#   - radius (RADIUS)
+#   - resp (REdis Serialization Protocol)
+#   - rpc (Remote Procedure Call)
+#   - rtcp (Real-Time Applications control  protocol)
+#   - rtp  (Real-Time Applications protocol)
+#   - snmp  (Simple  Network  Management  Protocol)
+#   - someip (SOME/IP)
+#   - tftp (Trivial File Transfer  Protocol)
+#   - vat  (Visual  Audio  Tool)
+#   - vxlan (Virtual eXtensible Local Area Network)
+#   - wb (distributed White Board)
+#   - zmtp1 (ZeroMQ Message Transport Protocol 1.0).
 EXPRESSION_TYPE=
+
+# The ports for web management access of the docker container.
+# ttyd tail, ttyd tmux, frontail, and tmux respectively
 HTTPPORT1=8080
 HTTPPORT2=8081
 HTTPPORT3=8082
 HTTPPORT4=8083
-HOSTNAME=tcpdumpsrvr01</code></pre>
+
+# The hostname of the instance of the docker container
+HOSTNAME=tcpdump01</code></pre>
 <h2 id="sample-docker-run-script">Sample docker run script</h2>
 <pre><code>#!/usr/bin/env bash
 REPO=toddwint
@@ -212,6 +267,7 @@ HGID=$(id -g)
 source &quot;$(dirname &quot;$(realpath $0)&quot;)&quot;/config.txt
 
 # Make the macvlan needed to listen on ports
+# Set the IP on the host and add a route to the container
 docker network create -d macvlan --subnet=&quot;$SUBNET&quot; --gateway=&quot;$GATEWAY&quot; \
   --aux-address=&quot;mgmt_ip=$MGMTIP&quot; -o parent=&quot;$INTERFACE&quot; \
   &quot;$HOSTNAME&quot;
@@ -226,7 +282,9 @@ docker run -dit \
     --net=&quot;$HOSTNAME&quot; \
     --ip $IPADDR \
     -h &quot;$HOSTNAME&quot; \
-    -v &quot;$(pwd)&quot;/captures:/opt/&quot;$APPNAME&quot;/scripts/captures \
+    ` # Volume can be changed to another folder. For Example: ` \
+    ` # -v /home/&quot;$USER&quot;/Desktop/captures:/opt/&quot;$APPNAME&quot;/captures \ ` \
+    -v &quot;$(dirname &quot;$(realpath $0)&quot;)&quot;/captures:/opt/&quot;$APPNAME&quot;/captures \
     -p &quot;$IPADDR&quot;:&quot;$HTTPPORT1&quot;:&quot;$HTTPPORT1&quot; \
     -p &quot;$IPADDR&quot;:&quot;$HTTPPORT2&quot;:&quot;$HTTPPORT2&quot; \
     -p &quot;$IPADDR&quot;:&quot;$HTTPPORT3&quot;:&quot;$HTTPPORT3&quot; \
@@ -256,7 +314,5 @@ docker run -dit \
 <li><code>http://&lt;ip_address&gt;:&lt;port4&gt;</code></li>
 </ul></li>
 </ul>
-<h2 id="issues">Issues?</h2>
-<p>Make sure to set the IP on the host and that the ports being used are not currently being used by the host.</p>
 </body>
 </html>

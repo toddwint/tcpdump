@@ -1,5 +1,5 @@
 FROM toddwint/mybaseimage
-COPY scripts /opt/tcpdump/scripts
+COPY app /opt/tcpdump
 ENV DEBIAN_FRONTEND=noninteractive \
     TZ=UTC \
     ROTATE_SECONDS=300 \
@@ -25,12 +25,8 @@ RUN echo 'deb http://archive.ubuntu.com/ubuntu/ jammy main' >> /etc/apt/sources.
     && \
     echo $HOSTNAME > /etc/hostname \
     && \
-    cd /opt \
-    && \
-    rm -rf /opt/mybaseimage \
-    && \
     apt-get autoremove -y \
     && \
     rm -rf /var/lib/apt/lists/*
-WORKDIR /opt/tcpdump/scripts
+WORKDIR /opt/tcpdump/debug
 CMD ["/opt/tcpdump/scripts/startup.sh"]

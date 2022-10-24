@@ -6,6 +6,7 @@ HGID=$(id -g)
 source "$(dirname "$(realpath $0)")"/config.txt
 
 # Make the macvlan needed to listen on ports
+# Set the IP on the host and add a route to the container
 docker network create -d macvlan --subnet="$SUBNET" --gateway="$GATEWAY" \
   --aux-address="mgmt_ip=$MGMTIP" -o parent="$INTERFACE" \
   "$HOSTNAME"
@@ -20,7 +21,9 @@ docker run -dit \
     --net="$HOSTNAME" \
     --ip $IPADDR \
     -h "$HOSTNAME" \
-    -v "$(pwd)"/captures:/opt/"$APPNAME"/scripts/captures \
+    ` # Volume can be changed to another folder. For Example: ` \
+    ` # -v /home/"$USER"/Desktop/captures:/opt/"$APPNAME"/captures \ ` \
+    -v "$(dirname "$(realpath $0)")"/captures:/opt/"$APPNAME"/captures \
     -p "$IPADDR":"$HTTPPORT1":"$HTTPPORT1" \
     -p "$IPADDR":"$HTTPPORT2":"$HTTPPORT2" \
     -p "$IPADDR":"$HTTPPORT3":"$HTTPPORT3" \
