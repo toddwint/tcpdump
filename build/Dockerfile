@@ -14,11 +14,11 @@ ENV DEBIAN_FRONTEND=noninteractive \
     HOSTNAME=tcpdumpsrvr \
     APPNAME=tcpdump
 # tcpdump version > 4.99 is required. Focal only has version 4.9.3
-RUN echo 'deb http://archive.ubuntu.com/ubuntu/ jammy main' >> /etc/apt/sources.list \
-    && \
-    echo 'deb-src http://archive.ubuntu.com/ubuntu/ jammy main' >> /etc/apt/sources.list \ 
-    && \
-    apt-get update \
+#RUN echo 'deb http://archive.ubuntu.com/ubuntu/ jammy main' >> /etc/apt/sources.list \
+#    && \
+#    echo 'deb-src http://archive.ubuntu.com/ubuntu/ jammy main' >> /etc/apt/sources.list \ 
+#    && \
+RUN apt-get update \
     && \
     apt-get install -y \
     tcpdump \
