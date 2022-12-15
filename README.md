@@ -115,7 +115,8 @@ REPO=toddwint
 APPNAME=tcpdump
 HUID=$(id -u)
 HGID=$(id -g)
-source "$(dirname "$(realpath $0)")"/config.txt
+SCRIPTDIR="$(dirname "$(realpath "$0")")"
+source "$SCRIPTDIR"/config.txt
 
 # Make the macvlan needed to listen on ports
 # Set the IP on the host and add a route to the container
@@ -135,7 +136,7 @@ docker run -dit \
     -h "$HOSTNAME" \
     ` # Volume can be changed to another folder. For Example: ` \
     ` # -v /home/"$USER"/Desktop/captures:/opt/"$APPNAME"/captures \ ` \
-    -v "$(dirname "$(realpath $0)")"/captures:/opt/"$APPNAME"/captures \
+    -v "$SCRIPTDIR"/captures:/opt/"$APPNAME"/captures \
     -p "$IPADDR":"$HTTPPORT1":"$HTTPPORT1" \
     -p "$IPADDR":"$HTTPPORT2":"$HTTPPORT2" \
     -p "$IPADDR":"$HTTPPORT3":"$HTTPPORT3" \
