@@ -9,6 +9,15 @@ Docker Hub: <https://hub.docker.com/r/toddwint/tcpdump>
 GitHub: <https://github.com/toddwint/tcpdump>
 
 
+## Overview
+
+- Download the docker image and github files.
+- Configure the settings in `run/config.txt`.
+- Start a new container by running `run/create_container.sh`. The folder `captures` will be created as specified in the `create_container.sh` script.
+- Open the file webadmin.html to view messages in a web browser.
+- Traffic is saved in the `captures` folder timestamped at the interval set by the configuration file.
+
+
 ## Features
 
 - Ubuntu base image
