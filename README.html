@@ -162,7 +162,10 @@
 <ul>
 <li>Download the docker image and github files.</li>
 <li>Configure the settings in <code>run/config.txt</code>.</li>
-<li>Start a new container by running <code>run/create_container.sh</code>. The folder <code>captures</code> will be created as specified in the <code>create_container.sh</code> script.</li>
+<li>Start a new container by running <code>run/create_container.sh</code>.
+<ul>
+<li>The folder <code>captures</code> will be created as specified in the <code>create_container.sh</code> script.</li>
+</ul></li>
 <li>Open the file webadmin.html to view messages in a web browser.</li>
 <li>Traffic is saved in the <code>captures</code> folder timestamped at the interval set by the configuration file.</li>
 </ul>
@@ -209,7 +212,7 @@ IPADDR=192.168.10.1
 # The IP address that will be set on the host to manage the docker container
 MGMTIP=192.168.10.2
 
-# The IP subnet in the form subnet/cidr
+# The IP subnet in the form NETWORK/PREFIX
 SUBNET=192.168.10.0/24
 
 # The IP of the gateway. 
