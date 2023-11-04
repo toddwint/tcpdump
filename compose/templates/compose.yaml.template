@@ -34,5 +34,5 @@ services:
 
 networks:
     default:
-        name: "${INTERFACE}-macvlan"
+        name: "${HOSTNAME}"
         external: true
