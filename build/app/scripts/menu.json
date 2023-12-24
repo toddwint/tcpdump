@@ -1,0 +1,74 @@
+[
+ [
+  "Launch tmux",
+  "/opt/tcpdump/scripts/tmux.sh"
+ ],
+ [
+  "Search logs",
+  [
+   [
+    "tcpdump log",
+    "tail -F -n +1 /opt/tcpdump/logs/tcpdump.log | fzf --tac --no-sort"
+   ]
+  ]
+ ],
+ [
+  "View logs",
+  [
+   [
+    "tcpdump log",
+    "more /opt/tcpdump/logs/tcpdump.log"
+   ]
+  ]
+ ],
+ [
+  "View configuration",
+  [
+   [
+    "IP addresses",
+    "ip addr show | more"
+   ],
+   [
+    "Routing table",
+    "ip route show | more"
+   ],
+   [
+    "ARP or NDISC cache",
+    "ip neighbor show | more"
+   ],
+   [
+    "Network devices",
+    "ip link show | more"
+   ]
+  ]
+ ],
+ [
+  "Debug scripts",
+  [
+   [
+    "Show processes",
+    "ps ax | more"
+   ],
+   [
+    "Show sockets",
+    "ss --all --numeric --processes | more"
+   ],
+   [
+    "ttyd1 log",
+    "more /opt/tcpdump/logs/ttyd1.log"
+   ],
+   [
+    "ttyd2 log",
+    "more /opt/tcpdump/logs/ttyd2.log"
+   ],
+   [
+    "frontail log",
+    "more /opt/tcpdump/logs/frontail.log"
+   ],
+   [
+    "tailon log",
+    "more /opt/tcpdump/logs/tailon.log"
+   ]
+  ]
+ ]
+]

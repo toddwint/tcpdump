@@ -1,6 +1,6 @@
 ---
 title: README
-date: 2023-11-03
+date: 2023-12-21
 ---
 
 # toddwint/tcpdump
@@ -36,11 +36,12 @@ Example `docker run` and `docker compose` commands as well as sample commands to
 
 - Ubuntu base image
 - Plus:
+  - fzf
+  - iproute2
+  - iputils-ping
+  - python3-minimal
   - tcpdump
   - tmux
-  - python3-minimal
-  - iputils-ping
-  - iproute2
   - tzdata
   - [ttyd](https://github.com/tsl0922/ttyd)
     - View the terminal in your browser
