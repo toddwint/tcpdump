@@ -1,12 +1,14 @@
 FROM toddwint/mybaseimage
 COPY app /opt/tcpdump
+LABEL LICENSE="GPL-3.0-or-later"
 ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONUNBUFFERED=1 \
     TZ=UTC \
     ROTATE_SECONDS=300 \
     EXPRESSION= \
     EXPRESSION_TYPE= \
-    HUID=1001 \
-    HGID=1001 \
+    HUID=0 \
+    HGID=0 \
     HTTPPORT1=8080 \
     HTTPPORT2=8081 \
     HTTPPORT3=8082 \

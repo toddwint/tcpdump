@@ -2,7 +2,7 @@ name: ${HOSTNAME}
 
 services:
   tcpdump:
-    image: toddwint/tcpdump
+    image: toddwint/${APPNAME}
     hostname: ${HOSTNAME}
     ports:
         - "${IPADDR}:${HTTPPORT1}:${HTTPPORT1}"
